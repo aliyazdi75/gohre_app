@@ -1,0 +1,26 @@
+{
+  "locations": [
+    {
+      "id": 51100,
+      "name": "Wohnung",
+      "rooms": [
+        {
+          "id": 57779,
+          "name": "Küche",
+          "appliances": [
+            {
+              "appliance_id": "56a85d5c-3e9e-479d-80ba-b4cfbb7fe619",
+              "name": "My GROHE Blue Home",
+              "data_latest": {
+                "measurement": {
+                  "remaining_co2": 89,
+                  "remaining_filter": 100
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
