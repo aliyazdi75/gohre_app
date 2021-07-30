@@ -11,3 +11,12 @@ abstract class HomeEvent extends Equatable {
 class GetLocationsRequested extends HomeEvent {
   const GetLocationsRequested();
 }
+
+class LocationsUpdated extends HomeEvent {
+  const LocationsUpdated(this.newLocations);
+
+  final Locations newLocations;
+
+  @override
+  List<Object?> get props => [newLocations];
+}

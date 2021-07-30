@@ -21,9 +21,13 @@ class DevicePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<HomeBloc, HomeState>(
       builder: (context, state) {
-        if (state.status == HomeStatus.initial) {
-          BlocProvider.of<HomeBloc>(context).add(const GetLocationsRequested());
-        }
+        final appData = state.locations
+            .firstWhere((loc) => loc.id == applianceItem.location.id)
+            .rooms
+            .firstWhere((room) => room.id == applianceItem.room.id)
+            .appliances
+            .firstWhere((app) => app.id == applianceItem.appliance.id)
+            .data;
         return NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
@@ -73,7 +77,7 @@ class DevicePage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8.0),
                                 Text(
-                                  '${applianceItem.appliance.data.measurement.remainingCO2}',
+                                  '${appData.measurement.remainingCO2}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
@@ -97,7 +101,7 @@ class DevicePage extends StatelessWidget {
                                 ),
                                 const SizedBox(height: 8.0),
                                 Text(
-                                  '${applianceItem.appliance.data.measurement.remainingFilter}',
+                                  '${appData.measurement.remainingFilter}',
                                   style: const TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
