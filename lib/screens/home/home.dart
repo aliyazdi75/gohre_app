@@ -5,6 +5,7 @@ import 'package:grohe_app/models/appliance.dart';
 import 'package:grohe_app/models/location.dart';
 import 'package:grohe_app/models/room.dart';
 import 'package:grohe_app/repositories/home/index.dart';
+import 'package:grohe_app/screens/components/index.dart';
 import 'package:grohe_app/screens/device/device.dart';
 
 import 'components/index.dart';
@@ -96,21 +97,12 @@ class HomePage extends StatelessWidget {
         if (state.status == HomeStatus.initial) {
           BlocProvider.of<HomeBloc>(context).add(const GetLocationsRequested());
         }
-        return NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
-            return <Widget>[
-              SliverAppBar(
-                automaticallyImplyLeading: true,
-                centerTitle: true,
-                pinned: true,
-                expandedHeight: 250,
-                actions: const [
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(Icons.add),
-                  ),
-                ],
-                flexibleSpace: Stack(
+        return CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: PersistentHeader(
+                child: Stack(
                   fit: StackFit.expand,
                   alignment: Alignment.center,
                   children: [
@@ -118,91 +110,113 @@ class HomePage extends StatelessWidget {
                       image: AssetImage('assets/wave.jpg'),
                       fit: BoxFit.cover,
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Text(
-                            'OVERVIEW',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
+                    const Positioned(
+                      top: 0,
+                      right: 0,
+                      child: SafeArea(
+                        child: Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Icon(
+                            Icons.add,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SafeArea(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: const [
+                          Padding(
+                            padding: EdgeInsets.only(top: 10.0),
+                            child: Text(
+                              'OVERVIEW',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 18.0,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(20.0),
-                          child: Image(
-                            image: AssetImage('assets/checkmark.png'),
-                            height: 70.0,
-                            fit: BoxFit.cover,
+                          Padding(
+                            padding: EdgeInsets.all(20.0),
+                            child: Image(
+                              image: AssetImage('assets/checkmark.png'),
+                              height: 70.0,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                        ),
-                        Text(
-                          'Hello Timo, stay hydrated to perform better!',
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontSize: 20.0,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w300,
+                          Text(
+                            'Hello Timo, stay hydrated to perform better!',
+                            maxLines: 2,
+                            style: TextStyle(
+                              fontSize: 25.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.w300,
+                            ),
+                            textAlign: TextAlign.center,
                           ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
+                          SizedBox(height: 8.0),
+                        ],
+                      ),
                     )
                   ],
                 ),
               ),
-            ];
-          },
-          body: Center(
-            child: state.status != HomeStatus.success
-                ? Text(
+            ),
+            if (state.status != HomeStatus.success)
+              SliverToBoxAdapter(
+                child: Center(
+                  child: Text(
                     state.status == HomeStatus.loading
                         ? 'Loading...'
                         : 'Failed!',
-                  )
-                : ListView.builder(
-                    itemCount: state.locations.length,
-                    itemBuilder: (BuildContext context, int locationIndex) {
-                      final applianceItems = [];
-                      if (state.status == HomeStatus.success) {
-                        for (var room in state.locations[locationIndex].rooms) {
-                          for (var appliance in room.appliances) {
-                            applianceItems.add(ApplianceItem(
-                              state.locations[locationIndex],
-                              room,
-                              appliance,
-                            ));
-                          }
+                  ),
+                ),
+              )
+            else
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int locationIndex) {
+                    final applianceItems = [];
+                    if (state.status == HomeStatus.success) {
+                      for (var room in state.locations[locationIndex].rooms) {
+                        for (var appliance in room.appliances) {
+                          applianceItems.add(ApplianceItem(
+                            state.locations[locationIndex],
+                            room,
+                            appliance,
+                          ));
                         }
                       }
-                      return ExpansionTile(
-                        title: Row(
-                          children: [
-                            const Icon(Icons.location_pin),
-                            Text(state.locations[locationIndex].name),
-                          ],
+                    }
+                    return ExpansionTile(
+                      initiallyExpanded: true,
+                      childrenPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.location_pin),
+                      title: Text(state.locations[locationIndex].name),
+                      children: <Widget>[
+                        SizedBox(
+                          height: 350.0,
+                          child: PageView.builder(
+                            itemCount: applianceItems.length,
+                            itemBuilder:
+                                (BuildContext context, int applianceIndex) {
+                              return ApplianceCard(
+                                applianceItem: applianceItems[applianceIndex],
+                              );
+                            },
+                          ),
                         ),
-                        children: <Widget>[
-                          SizedBox(
-                            height: 320.0,
-                            child: PageView.builder(
-                              itemCount: applianceItems.length,
-                              itemBuilder:
-                                  (BuildContext context, int applianceIndex) {
-                                return ApplianceCard(
-                                  applianceItem: applianceItems[applianceIndex],
-                                );
-                              },
-                            ),
-                          )
-                        ],
-                      );
-                    },
-                  ),
-          ),
+                      ],
+                    );
+                  },
+                  childCount: state.locations.length,
+                ),
+              ),
+          ],
         );
       },
     );

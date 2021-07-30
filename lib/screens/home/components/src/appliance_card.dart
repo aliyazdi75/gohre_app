@@ -16,8 +16,7 @@ class ApplianceCard extends StatelessWidget {
       child: Card(
         child: InkWell(
           onTap: () {
-            Navigator.pushNamed(
-              context,
+            Navigator.of(context).pushNamed(
               DevicePage.routeName,
               arguments: DevicePageArguments(applianceItem: applianceItem),
             );
@@ -31,7 +30,7 @@ class ApplianceCard extends StatelessWidget {
                     applianceItem.appliance.name,
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
-                  contentPadding: const EdgeInsets.all(0.0),
+                  contentPadding: EdgeInsets.zero,
                   subtitle: Text(applianceItem.room.name),
                   leading: const Image(
                     image: AssetImage('assets/device.png'),
