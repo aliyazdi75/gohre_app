@@ -21,6 +21,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> mapEventToState(HomeEvent event) async* {
     if (event is GetLocationsRequested) {
       yield* _mapGetLocationsToState();
+    } else if (event is ListenLocationsUpdated) {
+      yield* _mapListenLocationsUpdatedToState();
     } else if (event is LocationsUpdated) {
       yield* _mapLocationsUpdatedToState(event);
     }
@@ -29,8 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Stream<HomeState> _mapGetLocationsToState() async* {
     yield state.copyWith(status: HomeStatus.loading);
     try {
-      final locations = await homeRepository.getLocations(
-          onUpdate: (newLocations) => add(LocationsUpdated(newLocations)));
+      final locations = await homeRepository.getLocations();
       yield state.copyWith(
         status: HomeStatus.success,
         locations: locations.locations.toList(),
@@ -38,6 +39,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     } on Exception {
       yield state.copyWith(status: HomeStatus.failure);
     }
+  }
+
+  Stream<HomeState> _mapListenLocationsUpdatedToState() async* {
+    homeRepository.updateLocations(
+        onUpdate: (newLocations) => add(LocationsUpdated(newLocations)));
   }
 
   Stream<HomeState> _mapLocationsUpdatedToState(LocationsUpdated event) async* {

@@ -7,9 +7,12 @@ import 'package:grohe_app/providers/api/home/index.dart';
 class HomeRepository {
   late Locations _locations;
 
-  Future<Locations> getLocations(
-      {required Function(Locations newLocations) onUpdate}) async {
+  Future<Locations> getLocations() async {
     _locations = await HomeApi.getLocations();
+    return _locations;
+  }
+
+  void updateLocations({required Function(Locations newLocations) onUpdate}) {
     Timer.periodic(const Duration(seconds: 5), (timer) {
       for (int i = 0; i < _locations.locations.length; i++) {
         for (int j = 0; j < _locations.locations[i].rooms.length; j++) {
@@ -30,6 +33,5 @@ class HomeRepository {
       }
       onUpdate(_locations);
     });
-    return _locations;
   }
 }

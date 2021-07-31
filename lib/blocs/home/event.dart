@@ -12,6 +12,10 @@ class GetLocationsRequested extends HomeEvent {
   const GetLocationsRequested();
 }
 
+class ListenLocationsUpdated extends HomeEvent {
+  const ListenLocationsUpdated();
+}
+
 class LocationsUpdated extends HomeEvent {
   const LocationsUpdated(this.newLocations);
 

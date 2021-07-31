@@ -96,6 +96,9 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state.status == HomeStatus.initial) {
           BlocProvider.of<HomeBloc>(context).add(const GetLocationsRequested());
+        } else if (state.status == HomeStatus.success) {
+          BlocProvider.of<HomeBloc>(context)
+              .add(const ListenLocationsUpdated());
         }
         return CustomScrollView(
           slivers: [
