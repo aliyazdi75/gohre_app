@@ -42,11 +42,15 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   }
 
   Stream<HomeState> _mapListenLocationsUpdatedToState() async* {
+    yield state.copyWith(status: HomeStatus.updating);
     homeRepository.updateLocations(
         onUpdate: (newLocations) => add(LocationsUpdated(newLocations)));
   }
 
   Stream<HomeState> _mapLocationsUpdatedToState(LocationsUpdated event) async* {
-    yield state.copyWith(locations: event.newLocations.locations.toList());
+    yield state.copyWith(
+      status: HomeStatus.updating,
+      locations: event.newLocations.locations.toList(),
+    );
   }
 }

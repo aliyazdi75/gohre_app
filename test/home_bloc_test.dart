@@ -89,7 +89,7 @@ void main() {
       );
 
       blocTest<HomeBloc, HomeState>(
-        'emits [loading, success] when getLocations succeeds '
+        'emits [loading, success, updating] when getLocations succeeds '
         'and updateLocations succeeds',
         build: () {
           when(
@@ -116,7 +116,11 @@ void main() {
             locations: locations.locations.toList(),
           ),
           HomeState(
-            status: HomeStatus.success,
+            status: HomeStatus.updating,
+            locations: locations.locations.toList(),
+          ),
+          HomeState(
+            status: HomeStatus.updating,
             locations: updatedLocations.locations.toList(),
           ),
         ],

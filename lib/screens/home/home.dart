@@ -33,6 +33,10 @@ class HomeNavigation extends StatelessWidget {
           child: BlocListener<HomeBloc, HomeState>(
             listener: (context, state) {
               switch (state.status) {
+                case HomeStatus.success:
+                  BlocProvider.of<HomeBloc>(context)
+                      .add(const ListenLocationsUpdated());
+                  break;
                 case HomeStatus.failure:
                   ScaffoldMessenger.of(context)
                     ..hideCurrentSnackBar()
@@ -96,9 +100,6 @@ class HomePage extends StatelessWidget {
       builder: (context, state) {
         if (state.status == HomeStatus.initial) {
           BlocProvider.of<HomeBloc>(context).add(const GetLocationsRequested());
-        } else if (state.status == HomeStatus.success) {
-          BlocProvider.of<HomeBloc>(context)
-              .add(const ListenLocationsUpdated());
         }
         return CustomScrollView(
           slivers: [
@@ -169,7 +170,8 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-            if (state.status != HomeStatus.success)
+            if (!(state.status == HomeStatus.success ||
+                state.status == HomeStatus.updating))
               SliverToBoxAdapter(
                 child: Center(
                   child: Text(
@@ -184,15 +186,13 @@ class HomePage extends StatelessWidget {
                 delegate: SliverChildBuilderDelegate(
                   (BuildContext context, int locationIndex) {
                     final applianceItems = [];
-                    if (state.status == HomeStatus.success) {
-                      for (var room in state.locations[locationIndex].rooms) {
-                        for (var appliance in room.appliances) {
-                          applianceItems.add(ApplianceItem(
-                            state.locations[locationIndex],
-                            room,
-                            appliance,
-                          ));
-                        }
+                    for (var room in state.locations[locationIndex].rooms) {
+                      for (var appliance in room.appliances) {
+                        applianceItems.add(ApplianceItem(
+                          state.locations[locationIndex],
+                          room,
+                          appliance,
+                        ));
                       }
                     }
                     return ExpansionTile(
