@@ -13,7 +13,7 @@ class DevicePageArguments {
 }
 
 class DevicePage extends StatelessWidget {
-  static const routeName = '/extractArguments';
+  static const routeName = '/device';
 
   const DevicePage({Key? key, required this.applianceItem}) : super(key: key);
   final ApplianceItem applianceItem;
